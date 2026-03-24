@@ -2,11 +2,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter/rendering.dart';
 import '../data/objetos_repository.dart';
 import 'objetos_provider.dart';
 
 class SubirObjetoScreen extends StatefulWidget {
-  const SubirObjetoScreen({super.key});
+  final Function(bool)? onFabVisibilityChanged;
+  const SubirObjetoScreen({super.key, this.onFabVisibilityChanged});
 
   @override
   State<SubirObjetoScreen> createState() => _SubirObjetoScreenState();
@@ -17,6 +19,7 @@ class _SubirObjetoScreenState extends State<SubirObjetoScreen> {
   final TextEditingController _objetoController = TextEditingController();
   final TextEditingController _descripcionController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  final ScrollController _scrollController = ScrollController();
 
   File? _imageFile;
   CategoriaEntity? _selectedCategoria;
@@ -45,6 +48,14 @@ class _SubirObjetoScreenState extends State<SubirObjetoScreen> {
     super.initState();
     _objetoController.addListener(_updateState);
     _descripcionController.addListener(_updateState);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        widget.onFabVisibilityChanged?.call(false);
+      } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        widget.onFabVisibilityChanged?.call(true);
+      }
+    });
 
     // Cargar categorías si la lista es vacía
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -121,6 +132,7 @@ class _SubirObjetoScreenState extends State<SubirObjetoScreen> {
           final categorias = provider.categorias.where((c) => c.parentId == 0).toList();
 
           return SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,

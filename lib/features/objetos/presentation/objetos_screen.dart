@@ -7,7 +7,8 @@ import '../domain/objeto_entity.dart';
 
 class ObjetosScreen extends StatefulWidget {
   final Function(bool)? onViewChanged;
-  const ObjetosScreen({super.key, this.onViewChanged});
+  final Function(bool)? onFabVisibilityChanged;
+  const ObjetosScreen({super.key, this.onViewChanged, this.onFabVisibilityChanged});
 
   @override
   State<ObjetosScreen> createState() => _ObjetosScreenState();
@@ -47,8 +48,10 @@ class _ObjetosScreenState extends State<ObjetosScreen> {
         objeto: _selectedObjeto!,
         onBack: () {
           widget.onViewChanged?.call(false);
+          widget.onFabVisibilityChanged?.call(true);
           setState(() => _selectedObjeto = null);
         },
+        onFabVisibilityChanged: widget.onFabVisibilityChanged,
       );
     }
 

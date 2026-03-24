@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../features/auth/auth.dart';
 import '../../../features/scanner/scanner.dart';
@@ -32,27 +32,31 @@ class _MainScreenContent extends StatefulWidget {
 class _MainScreenContentState extends State<_MainScreenContent> {
   int _currentIndex = 1;
   bool _isDetailViewOpen = false;
+  bool _isFabVisible = true;
 
   List<Widget> get _screens => [
     ObjetosScreen(
       onViewChanged: (isOpen) => setState(() => _isDetailViewOpen = isOpen),
+      onFabVisibilityChanged: (visible) => setState(() => _isFabVisible = visible),
     ), // 0
     const DashboardScreen(), // 1
     const Center(child: Text('Pantalla de Ajustes PrÃ³ximamente')), // 2
     ScannerScreen(
       onScanComplete: () {
-        setState(() { _currentIndex = 1; _isDetailViewOpen = false; });
+        setState(() { _currentIndex = 1; _isDetailViewOpen = false; _isFabVisible = true; });
       },
     ), // 3
     const UsuariosScreen(), // 4
-    const SubirObjetoScreen(), // 5
+    SubirObjetoScreen(
+      onFabVisibilityChanged: (visible) => setState(() => _isFabVisible = visible),
+    ), // 5
   ];
 
   final List<String> _titles = [
-    'Catálogo de Objetos',
+    'CatÃ¡logo de Objetos',
     'Historial de Escaneos',
     'Ajustes',
-    'Escanear Código QR',
+    'Escanear CÃ³digo QR',
     'Listado de Usuarios',
     'Subir Objeto',
   ];
@@ -83,7 +87,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.storefront, color: primaryColor),
               title: const Text('Productos'),
               onTap: () {
-                setState(() { _currentIndex = 0; _isDetailViewOpen = false; });
+                setState(() { _currentIndex = 0; _isDetailViewOpen = false; _isFabVisible = true; });
                 Navigator.pop(context); // Close drawer
               },
             ),
@@ -91,7 +95,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.history, color: primaryColor),
               title: const Text('Historial'),
               onTap: () {
-                setState(() { _currentIndex = 1; _isDetailViewOpen = false; });
+                setState(() { _currentIndex = 1; _isDetailViewOpen = false; _isFabVisible = true; });
                 Navigator.pop(context);
               },
             ),
@@ -99,7 +103,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.settings, color: primaryColor),
               title: const Text('Ajustes'),
               onTap: () {
-                setState(() { _currentIndex = 2; _isDetailViewOpen = false; });
+                setState(() { _currentIndex = 2; _isDetailViewOpen = false; _isFabVisible = true; });
                 Navigator.pop(context);
               },
             ),
@@ -107,7 +111,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.people, color: primaryColor),
               title: const Text('Usuarios'),
               onTap: () {
-                setState(() { _currentIndex = 4; _isDetailViewOpen = false; });
+                setState(() { _currentIndex = 4; _isDetailViewOpen = false; _isFabVisible = true; });
                 Navigator.pop(context);
               },
             ),
@@ -115,7 +119,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.add_photo_alternate_rounded, color: primaryColor),
               title: const Text('Subir Producto'),
               onTap: () {
-                setState(() { _currentIndex = 5; _isDetailViewOpen = false; });
+                setState(() { _currentIndex = 5; _isDetailViewOpen = false; _isFabVisible = true; });
                 Navigator.pop(context);
               },
             ),
@@ -132,18 +136,22 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         ),
       ),
       body: _screens[_currentIndex],
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: primaryColor,
-        shape: const CircleBorder(),
-        onPressed: () {
-          if (_currentIndex != 3) {
-            setState(() {
-              _currentIndex = 3;
-              _isDetailViewOpen = false;
-            });
-          }
-        },
-        child: const Icon(Icons.qr_code_scanner, color: Colors.white),
+      floatingActionButton: AnimatedScale(
+        scale: _isFabVisible ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 200),
+        child: FloatingActionButton(
+          backgroundColor: primaryColor,
+          shape: const CircleBorder(),
+          onPressed: () {
+            if (_currentIndex != 3) {
+              setState(() {
+                _currentIndex = 3;
+                _isDetailViewOpen = false;
+              });
+            }
+          },
+          child: const Icon(Icons.qr_code_scanner, color: Colors.white),
+        ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: const BottomAppBar(

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,8 +10,9 @@ import 'objetos_provider.dart';
 class ObjetoDetailScreen extends StatefulWidget {
   final ObjetoEntity objeto;
   final VoidCallback? onBack;
+  final Function(bool)? onFabVisibilityChanged;
 
-  const ObjetoDetailScreen({super.key, required this.objeto, this.onBack});
+  const ObjetoDetailScreen({super.key, required this.objeto, this.onBack, this.onFabVisibilityChanged});
 
   @override
   State<ObjetoDetailScreen> createState() => _ObjetoDetailScreenState();
@@ -21,6 +23,7 @@ class _ObjetoDetailScreenState extends State<ObjetoDetailScreen> {
   late TextEditingController _objetoController;
   late TextEditingController _descripcionController;
   final ImagePicker _picker = ImagePicker();
+  final ScrollController _scrollController = ScrollController();
 
   File? _imageFile;
   CategoriaEntity? _selectedCategoria;
@@ -49,6 +52,14 @@ class _ObjetoDetailScreenState extends State<ObjetoDetailScreen> {
     _descripcionController = TextEditingController(text: widget.objeto.descripcion);
     _objetoController.addListener(_updateState);
     _descripcionController.addListener(_updateState);
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection == ScrollDirection.reverse) {
+        widget.onFabVisibilityChanged?.call(false);
+      } else if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
+        widget.onFabVisibilityChanged?.call(true);
+      }
+    });
 
     if (widget.objeto.estadoConservacion == 1) {
       _selectedEstado = 'Nuevo';
@@ -230,6 +241,7 @@ class _ObjetoDetailScreenState extends State<ObjetoDetailScreen> {
           final categorias = provider.categorias.where((c) => c.parentId == 0).toList();
 
           return SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
