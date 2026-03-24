@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import '../../../core/network/dio_client.dart';
+import '../../../core/network/api_endpoints.dart';
 import '../domain/producto_entity.dart';
 
 class CategoriaEntity {
@@ -25,7 +26,7 @@ class ProductosRepository {
       }
 
       final response = await _dioClient.dio.get(
-        'https://www.tenetrueca.com/services/api/objetos/catalogo',
+        ApiEndpoints.catalogo,
         queryParameters: queryParams,
       );
 
@@ -42,16 +43,21 @@ class ProductosRepository {
 
   Future<List<CategoriaEntity>> getCategorias() async {
     try {
-      final response = await _dioClient.dio.get('https://www.tenetrueca.com/assets/data/category.json');
-      if (response.data != null && response.data['data'] != null) {
-        final List<dynamic> data = response.data['data'];
+      final response = await _dioClient.dio.get(ApiEndpoints.categorias);
+      if (response.data != null && response.data['status'] == 'success') {
+        final List<dynamic> data = response.data['data'] ?? [];
         List<CategoriaEntity> cats = [];
-        for (var item in data) {
-          cats.add(CategoriaEntity(id: item['id'], name: item['name']));
-          if (item['subcategories'] != null) {
-            for (var sub in item['subcategories']) {
-              cats.add(CategoriaEntity(id: sub['id'], name: '  - ${sub['name']}'));
-            }
+        
+        // 1. Filtrar las categorias padre (parent_id == 0)
+        final parents = data.where((item) => item['parent_id'] == 0 || item['parent_id'] == null).toList();
+        
+        for (var parent in parents) {
+          cats.add(CategoriaEntity(id: parent['id'], name: parent['categoria']));
+          
+          // 2. Buscar las subcategorías cuyo parent_id sea el del padre
+          final subs = data.where((item) => item['parent_id'] == parent['id']).toList();
+          for (var sub in subs) {
+            cats.add(CategoriaEntity(id: sub['id'], name: '  - ${sub['categoria']}'));
           }
         }
         return cats;

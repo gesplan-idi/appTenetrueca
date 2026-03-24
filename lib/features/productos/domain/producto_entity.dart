@@ -1,3 +1,5 @@
+import '../../../core/network/api_endpoints.dart';
+
 class ProductoEntity {
   final int id;
   final String objeto;
@@ -19,7 +21,7 @@ class ProductoEntity {
 
   String get imageUrl {
     if (directorio != null && archivo != null) {
-      return 'https://www.tenetrueca.com/services/$directorio$archivo';
+      return ApiEndpoints.getImageUrl(directorio!, archivo!);
     }
     return ''; // URL vacía si no hay imagen
   }

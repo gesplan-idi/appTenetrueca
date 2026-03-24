@@ -3,17 +3,34 @@ import 'package:provider/provider.dart';
 import '../../../features/auth/presentation/auth_provider.dart';
 import '../../../features/scanner/presentation/dashboard_screen.dart';
 import '../../../features/scanner/presentation/scanner_screen.dart';
+import '../../../features/scanner/presentation/scanner_provider.dart';
 import '../../../features/productos/presentation/productos_screen.dart';
+import '../../../features/productos/presentation/productos_provider.dart';
 import 'widgets/custom_app_bar.dart';
 
-class MainScreen extends StatefulWidget {
+class MainScreen extends StatelessWidget {
   const MainScreen({super.key});
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ScannerProvider()),
+        ChangeNotifierProvider(create: (_) => ProductosProvider()),
+      ],
+      child: const _MainScreenContent(),
+    );
+  }
 }
 
-class _MainScreenState extends State<MainScreen> {
+class _MainScreenContent extends StatefulWidget {
+  const _MainScreenContent();
+
+  @override
+  State<_MainScreenContent> createState() => _MainScreenContentState();
+}
+
+class _MainScreenContentState extends State<_MainScreenContent> {
   int _currentIndex = 1;
 
   List<Widget> get _screens => [
