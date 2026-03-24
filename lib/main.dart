@@ -2,16 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'features/auth/presentation/auth_provider.dart';
 import 'features/auth/presentation/login_screen.dart';
-import 'features/scanner/presentation/dashboard_screen.dart';
+import 'package:flutter/services.dart';
+import 'core/presentation/main_screen.dart';
 import 'features/scanner/presentation/scanner_provider.dart';
+import 'features/productos/presentation/productos_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Fija la pantalla siempre en vertical (Portrait)
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ScannerProvider()),
+        ChangeNotifierProvider(create: (_) => ProductosProvider()),
       ],
       child: const MyApp(),
     ),
@@ -62,7 +72,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
 
     if (authProvider.isAuthenticated) {
-      return const DashboardScreen();
+      return const MainScreen();
     } else {
       return const LoginScreen();
     }

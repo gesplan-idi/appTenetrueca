@@ -4,7 +4,9 @@ import 'package:provider/provider.dart';
 import 'scanner_provider.dart';
 
 class ScannerScreen extends StatefulWidget {
-  const ScannerScreen({super.key});
+  final VoidCallback? onScanComplete;
+  
+  const ScannerScreen({super.key, this.onScanComplete});
 
   @override
   State<ScannerScreen> createState() => _ScannerScreenState();
@@ -16,7 +18,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Escanear QR')),
       body: MobileScanner(
         controller: _controller,
         onDetect: (capture) {
@@ -28,12 +29,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
               context.read<ScannerProvider>().addScan(code);
               
               // Notificar al usuario y volver
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Código escaneado: $code')),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Código escaneado: $code')),
+                );
+              }
 
-              _controller.stop(); // Detener cámara
-              Navigator.pop(context); // Volver al dashboard
+              if (widget.onScanComplete != null) {
+                widget.onScanComplete!();
+              }
               break;
             }
           }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'scanner_provider.dart';
-import 'scanner_screen.dart';
+// Import removed
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -24,7 +24,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final scannerProvider = context.watch<ScannerProvider>();
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Historial de Escaneos')),
       body: scannerProvider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : scannerProvider.scans.isEmpty
@@ -36,19 +35,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     return ListTile(
                       title: Text(scan.code),
                       subtitle: Text(scan.timestamp.toString()),
-                      leading: const Icon(Icons.qr_code),
+                      leading: const Icon(Icons.qr_code, color: Color(0xFF40543C)),
                     );
                   },
                 ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const ScannerScreen()),
-          );
-        },
-        child: const Icon(Icons.qr_code_scanner),
-      ),
     );
   }
 }
