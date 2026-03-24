@@ -1,31 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../data/productos_repository.dart';
-import 'productos_provider.dart';
-import 'producto_detail_screen.dart';
+import '../data/objetos_repository.dart';
+import 'objetos_provider.dart';
+import 'objeto_detail_screen.dart';
+import '../domain/objeto_entity.dart';
 
-class ProductosScreen extends StatefulWidget {
-  const ProductosScreen({super.key});
+class ObjetosScreen extends StatefulWidget {
+  final Function(bool)? onViewChanged;
+  const ObjetosScreen({super.key, this.onViewChanged});
 
   @override
-  State<ProductosScreen> createState() => _ProductosScreenState();
+  State<ObjetosScreen> createState() => _ObjetosScreenState();
 }
 
-class _ProductosScreenState extends State<ProductosScreen> {
+class _ObjetosScreenState extends State<ObjetosScreen> {
   final ScrollController _scrollController = ScrollController();
+  ObjetoEntity? _selectedObjeto;
 
   @override
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProductosProvider>().loadProductos();
+      context.read<ObjetosProvider>().loadObjetos();
     });
   }
 
   void _onScroll() {
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      context.read<ProductosProvider>().fetchMoreProductos();
+      context.read<ObjetosProvider>().fetchMoreObjetos();
     }
   }
 
@@ -37,7 +40,17 @@ class _ProductosScreenState extends State<ProductosScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ProductosProvider>();
+    final provider = context.watch<ObjetosProvider>();
+
+    if (_selectedObjeto != null) {
+      return ObjetoDetailScreen(
+        objeto: _selectedObjeto!,
+        onBack: () {
+          widget.onViewChanged?.call(false);
+          setState(() => _selectedObjeto = null);
+        },
+      );
+    }
 
     return Scaffold(
       body: Column(
@@ -46,14 +59,14 @@ class _ProductosScreenState extends State<ProductosScreen> {
           Expanded(
             child: provider.isLoading
                 ? const Center(child: CircularProgressIndicator(color: Color(0xFF40543C)))
-          : provider.productos.isEmpty
-              ? const Center(child: Text('No hay productos en el catálogo.'))
+          : provider.objetos.isEmpty
+              ? const Center(child: Text('No hay Objetos en el catálogo.'))
               : ListView.builder(
                   controller: _scrollController,
                   padding: const EdgeInsets.all(8.0),
-                  itemCount: provider.productos.length + (provider.isFetchingMore ? 1 : 0),
+                  itemCount: provider.objetos.length + (provider.isFetchingMore ? 1 : 0),
                   itemBuilder: (context, index) {
-                    if (index == provider.productos.length) {
+                    if (index == provider.objetos.length) {
                       return const Padding(
                         padding: EdgeInsets.all(16.0),
                         child: Center(
@@ -61,15 +74,11 @@ class _ProductosScreenState extends State<ProductosScreen> {
                         ),
                       );
                     }
-                    final p = provider.productos[index];
+                    final p = provider.objetos[index];
                     return InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => ProductoDetailScreen(producto: p),
-                          ),
-                        );
+                        setState(() { _selectedObjeto = p; });
+                        widget.onViewChanged?.call(true);
                       },
                       child: Card(
                         margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
@@ -78,7 +87,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
                         child: Row(
                           children: [
                             Hero(
-                              tag: 'producto_image_${p.id}',
+                              tag: 'objeto_image_${p.id}',
                               child: ClipRRect(
                                 borderRadius: const BorderRadius.only(
                                   topLeft: Radius.circular(12),
@@ -92,6 +101,23 @@ class _ProductosScreenState extends State<ProductosScreen> {
                                         fit: BoxFit.cover,
                                         errorBuilder: (context, error, stackTrace) =>
                                             _buildPlaceholder(),
+                                        loadingBuilder: (context, child, loadingProgress) {
+                                          if (loadingProgress == null) return child;
+                                          return const SizedBox(
+                                            width: 100,
+                                            height: 100,
+                                            child: Center(
+                                              child: SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color: Color(0xFF40543C),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
                                       )
                                     : _buildPlaceholder(),
                               ),
@@ -155,7 +181,7 @@ class _ProductosScreenState extends State<ProductosScreen> {
     );
   }
 
-  Widget _buildFilterBar(ProductosProvider provider) {
+  Widget _buildFilterBar(ObjetosProvider provider) {
     if (provider.categorias.isEmpty) return const SizedBox.shrink();
 
     return Container(
@@ -201,3 +227,4 @@ class _ProductosScreenState extends State<ProductosScreen> {
     );
   }
 }
+

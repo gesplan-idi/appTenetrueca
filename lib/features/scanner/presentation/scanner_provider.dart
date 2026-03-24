@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../data/scanner_repository.dart';
 import '../domain/scan_entity.dart';
 
@@ -29,3 +29,4 @@ class ScannerProvider extends ChangeNotifier {
     await loadScans(); // Recargar la lista
   }
 }
+

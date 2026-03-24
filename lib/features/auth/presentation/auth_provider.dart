@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../data/auth_repository.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -37,3 +37,4 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

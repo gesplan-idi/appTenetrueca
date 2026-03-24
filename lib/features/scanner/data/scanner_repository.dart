@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import '../../../core/database/database_helper.dart';
 import '../../../core/network/dio_client.dart';
 import '../domain/scan_entity.dart';
@@ -33,3 +33,4 @@ class ScannerRepository {
     }
   }
 }
+

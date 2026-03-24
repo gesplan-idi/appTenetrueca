@@ -1,11 +1,12 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-import 'features/auth/presentation/auth_provider.dart';
-import 'features/auth/presentation/auth_wrapper.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'features/auth/auth.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   
   // Fija la pantalla siempre en vertical (Portrait)
   await SystemChrome.setPreferredOrientations([
@@ -37,4 +38,5 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+
 

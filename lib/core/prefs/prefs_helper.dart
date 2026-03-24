@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+﻿import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefsHelper {
   static final PrefsHelper instance = PrefsHelper._init();
@@ -43,3 +43,4 @@ class PrefsHelper {
     return p.getBool(_isDarkThemeKey) ?? false;
   }
 }
+

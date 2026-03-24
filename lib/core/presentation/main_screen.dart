@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../features/auth/presentation/auth_provider.dart';
-import '../../../features/scanner/presentation/dashboard_screen.dart';
-import '../../../features/scanner/presentation/scanner_screen.dart';
-import '../../../features/scanner/presentation/scanner_provider.dart';
-import '../../../features/productos/presentation/productos_screen.dart';
-import '../../../features/productos/presentation/productos_provider.dart';
+import '../../../features/auth/auth.dart';
+import '../../../features/scanner/scanner.dart';
+import '../../../features/objetos/objetos.dart';
+import '../../../features/usuarios/usuarios.dart';
 import 'widgets/custom_app_bar.dart';
 
 class MainScreen extends StatelessWidget {
@@ -16,7 +14,8 @@ class MainScreen extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ScannerProvider()),
-        ChangeNotifierProvider(create: (_) => ProductosProvider()),
+        ChangeNotifierProvider(create: (_) => ObjetosProvider()),
+        ChangeNotifierProvider(create: (_) => UsuariosProvider()),
       ],
       child: const _MainScreenContent(),
     );
@@ -32,23 +31,30 @@ class _MainScreenContent extends StatefulWidget {
 
 class _MainScreenContentState extends State<_MainScreenContent> {
   int _currentIndex = 1;
+  bool _isDetailViewOpen = false;
 
   List<Widget> get _screens => [
-    const ProductosScreen(), // 0
+    ObjetosScreen(
+      onViewChanged: (isOpen) => setState(() => _isDetailViewOpen = isOpen),
+    ), // 0
     const DashboardScreen(), // 1
-    const Center(child: Text('Pantalla de Ajustes Próximamente')), // 2
+    const Center(child: Text('Pantalla de Ajustes PrÃ³ximamente')), // 2
     ScannerScreen(
       onScanComplete: () {
-        setState(() => _currentIndex = 1); // Va al historial tras escanear
+        setState(() { _currentIndex = 1; _isDetailViewOpen = false; });
       },
     ), // 3
+    const UsuariosScreen(), // 4
+    const SubirObjetoScreen(), // 5
   ];
 
   final List<String> _titles = [
-    'Catálogo de Productos',
+    'Catálogo de Objetos',
     'Historial de Escaneos',
     'Ajustes',
     'Escanear Código QR',
+    'Listado de Usuarios',
+    'Subir Objeto',
   ];
 
   @override
@@ -56,8 +62,8 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     const primaryColor = Color(0xFF40543C);
 
     return Scaffold(
-      appBar: CustomAppBar(title: _titles[_currentIndex]),
-      drawer: Drawer(
+      appBar: _isDetailViewOpen ? null : CustomAppBar(title: _titles[_currentIndex]),
+      drawer: _isDetailViewOpen ? null : Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -77,7 +83,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.storefront, color: primaryColor),
               title: const Text('Productos'),
               onTap: () {
-                setState(() => _currentIndex = 0);
+                setState(() { _currentIndex = 0; _isDetailViewOpen = false; });
                 Navigator.pop(context); // Close drawer
               },
             ),
@@ -85,7 +91,7 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.history, color: primaryColor),
               title: const Text('Historial'),
               onTap: () {
-                setState(() => _currentIndex = 1);
+                setState(() { _currentIndex = 1; _isDetailViewOpen = false; });
                 Navigator.pop(context);
               },
             ),
@@ -93,7 +99,23 @@ class _MainScreenContentState extends State<_MainScreenContent> {
               leading: const Icon(Icons.settings, color: primaryColor),
               title: const Text('Ajustes'),
               onTap: () {
-                setState(() => _currentIndex = 2);
+                setState(() { _currentIndex = 2; _isDetailViewOpen = false; });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.people, color: primaryColor),
+              title: const Text('Usuarios'),
+              onTap: () {
+                setState(() { _currentIndex = 4; _isDetailViewOpen = false; });
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.add_photo_alternate_rounded, color: primaryColor),
+              title: const Text('Subir Producto'),
+              onTap: () {
+                setState(() { _currentIndex = 5; _isDetailViewOpen = false; });
                 Navigator.pop(context);
               },
             ),
@@ -115,7 +137,10 @@ class _MainScreenContentState extends State<_MainScreenContent> {
         shape: const CircleBorder(),
         onPressed: () {
           if (_currentIndex != 3) {
-            setState(() => _currentIndex = 3);
+            setState(() {
+              _currentIndex = 3;
+              _isDetailViewOpen = false;
+            });
           }
         },
         child: const Icon(Icons.qr_code_scanner, color: Colors.white),
@@ -129,3 +154,4 @@ class _MainScreenContentState extends State<_MainScreenContent> {
     );
   }
 }
+

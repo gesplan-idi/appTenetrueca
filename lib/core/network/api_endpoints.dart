@@ -1,4 +1,4 @@
-class ApiEndpoints {
+﻿class ApiEndpoints {
   static const String baseUrl = 'https://www.tenetrueca.com';
   
   // Servicios / Rutas
@@ -17,3 +17,4 @@ class ApiEndpoints {
     return '$serviciosUrl/$directorio$archivo';
   }
 }
+

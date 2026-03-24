@@ -1,4 +1,4 @@
-import '../../../core/prefs/prefs_helper.dart';
+﻿import '../../../core/prefs/prefs_helper.dart';
 
 class AuthRepository {
   final PrefsHelper _prefs = PrefsHelper.instance;
@@ -18,3 +18,4 @@ class AuthRepository {
     return token != null && token.isNotEmpty;
   }
 }
+

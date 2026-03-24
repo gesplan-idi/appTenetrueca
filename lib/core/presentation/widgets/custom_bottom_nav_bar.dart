@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 
 class CustomBottomNavBar extends StatelessWidget {
   final int currentIndex;
@@ -42,3 +42,4 @@ class CustomBottomNavBar extends StatelessWidget {
     );
   }
 }
+

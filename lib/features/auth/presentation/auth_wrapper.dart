@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'auth_provider.dart';
 import 'login_screen.dart';
 import '../../../core/presentation/main_screen.dart';
@@ -30,6 +31,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
       );
     }
 
+    // Remover splash screen una vez que la app está lista para renderizar
+    FlutterNativeSplash.remove();
+
     if (authProvider.isAuthenticated) {
       return const MainScreen();
     } else {
@@ -37,3 +41,4 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
   }
 }
+

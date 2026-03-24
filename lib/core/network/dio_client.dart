@@ -1,4 +1,4 @@
-import 'package:dio/dio.dart';
+﻿import 'package:dio/dio.dart';
 import '../prefs/prefs_helper.dart';
 
 class DioClient {
@@ -34,3 +34,4 @@ class DioClient {
 
   Dio get dio => _dio;
 }
+

@@ -1,4 +1,4 @@
-class ScanEntity {
+﻿class ScanEntity {
   final int? id;
   final String code;
   final DateTime timestamp;
@@ -25,3 +25,4 @@ class ScanEntity {
     );
   }
 }
+

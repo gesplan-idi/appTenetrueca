@@ -1,19 +1,20 @@
-import 'package:flutter/foundation.dart';
+﻿import 'package:flutter/foundation.dart';
 import '../../../core/network/dio_client.dart';
 import '../../../core/network/api_endpoints.dart';
-import '../domain/producto_entity.dart';
+import '../domain/objeto_entity.dart';
 
 class CategoriaEntity {
   final int id;
   final String name;
+  final int parentId;
 
-  CategoriaEntity({required this.id, required this.name});
+  CategoriaEntity({required this.id, required this.name, this.parentId = 0});
 }
 
-class ProductosRepository {
+class ObjetosRepository {
   final DioClient _dioClient = DioClient.instance;
 
-  Future<List<ProductoEntity>> getProductos({int page = 1, int? categoriaId}) async {
+  Future<List<ObjetoEntity>> getObjetos({int page = 1, int? categoriaId}) async {
     try {
       final Map<String, dynamic> queryParams = {
         'page': page,
@@ -32,11 +33,11 @@ class ProductosRepository {
 
       if (response.data != null && response.data['status'] == 'success') {
         final List<dynamic> data = response.data['data'] ?? [];
-        return data.map((json) => ProductoEntity.fromJson(json)).toList();
+        return data.map((json) => ObjetoEntity.fromJson(json)).toList();
       }
       return [];
     } catch (e) {
-      debugPrint('Error obteniendo productos: $e');
+      debugPrint('Error obteniendo Objetos: $e');
       return [];
     }
   }
@@ -52,12 +53,12 @@ class ProductosRepository {
         final parents = data.where((item) => item['parent_id'] == 0 || item['parent_id'] == null).toList();
         
         for (var parent in parents) {
-          cats.add(CategoriaEntity(id: parent['id'], name: parent['categoria']));
+          cats.add(CategoriaEntity(id: parent['id'], name: parent['categoria'], parentId: 0));
           
           // 2. Buscar las subcategorías cuyo parent_id sea el del padre
           final subs = data.where((item) => item['parent_id'] == parent['id']).toList();
           for (var sub in subs) {
-            cats.add(CategoriaEntity(id: sub['id'], name: '  - ${sub['categoria']}'));
+            cats.add(CategoriaEntity(id: sub['id'], name: '  - ${sub['categoria']}', parentId: parent['id']));
           }
         }
         return cats;
@@ -69,3 +70,4 @@ class ProductosRepository {
     }
   }
 }
+
